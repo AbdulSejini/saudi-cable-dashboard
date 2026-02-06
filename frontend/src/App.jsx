@@ -9,6 +9,7 @@ import { DataProvider } from './context/DataContext';
 // Layout Components
 import Sidebar from './components/Layout/Sidebar';
 import Header from './components/Layout/Header';
+import MobileNav from './components/Layout/MobileNav';
 
 // Pages
 import Home from './pages/Home';
@@ -61,9 +62,13 @@ const MainLayout = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-[#0f1115]">
-      <Sidebar />
+      {/* Desktop Sidebar - Hidden on mobile */}
+      <div className="hidden md:block">
+        <Sidebar />
+      </div>
 
-      <main className={`transition-all duration-300 ${isRTL ? 'mr-[280px]' : 'ml-[280px]'}`}>
+      {/* Main Content - Full width on mobile, with sidebar margin on desktop */}
+      <main className={`transition-all duration-300 pb-20 md:pb-0 ${isRTL ? 'md:mr-[280px]' : 'md:ml-[280px]'}`}>
         <Header title={getPageTitle()} subtitle={t('header.subtitle')} />
         <AnimatePresence mode="wait">
           <PageWrapper key={location.pathname}>
@@ -71,6 +76,9 @@ const MainLayout = ({ children }) => {
           </PageWrapper>
         </AnimatePresence>
       </main>
+
+      {/* Mobile Bottom Navigation - Only on mobile */}
+      <MobileNav />
     </div>
   );
 };

@@ -47,7 +47,7 @@ const Header = ({ title, subtitle }) => {
 
   return (
     <header
-      className="sticky top-0 z-40 px-6 py-4"
+      className="sticky top-0 z-40 px-4 md:px-6 py-3 md:py-4"
       style={{
         background: isDark ? 'rgba(46, 45, 44, 0.95)' : 'rgba(255, 255, 255, 0.95)',
         backdropFilter: 'blur(12px)',
@@ -61,7 +61,7 @@ const Header = ({ title, subtitle }) => {
           <motion.h1
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-2xl font-bold"
+            className="text-lg md:text-2xl font-bold"
             style={{ color: isDark ? colors.textPrimary : '#2E2D2C' }}
           >
             {title || t('header.title')}
@@ -70,16 +70,16 @@ const Header = ({ title, subtitle }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1 }}
-            className="text-sm"
+            className="text-xs md:text-sm hidden sm:block"
             style={{ color: isDark ? colors.textSecondary : '#666564' }}
           >
             {subtitle || t('header.subtitle')}
           </motion.p>
         </div>
 
-        {/* Search Bar */}
-        <div className="flex-1 max-w-md mx-8">
-          <div className="relative">
+        {/* Search Bar - Hidden on mobile */}
+        <div className="hidden md:flex flex-1 max-w-md mx-8">
+          <div className="relative w-full">
             <Search className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 ${isRTL ? 'right-4' : 'left-4'}`} style={{ color: isDark ? colors.textMuted : '#9CA3AF' }} />
             <input
               type="text"
@@ -105,13 +105,13 @@ const Header = ({ title, subtitle }) => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 md:gap-3">
           {/* Theme Toggle */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={toggleTheme}
-            className="p-3 rounded-xl transition-all"
+            className="p-2 md:p-3 rounded-xl transition-all"
             style={{
               background: isDark ? colors.bgSecondary : '#F5F5F5',
               border: `1px solid ${isDark ? colors.border : '#EAEAEA'}`,
@@ -119,9 +119,9 @@ const Header = ({ title, subtitle }) => {
             title={isDark ? 'Light Mode' : 'Dark Mode'}
           >
             {isDark ? (
-              <Sun className="w-5 h-5" style={{ color: '#F39200' }} />
+              <Sun className="w-4 h-4 md:w-5 md:h-5" style={{ color: '#F39200' }} />
             ) : (
-              <Moon className="w-5 h-5" style={{ color: '#666564' }} />
+              <Moon className="w-4 h-4 md:w-5 md:h-5" style={{ color: '#666564' }} />
             )}
           </motion.button>
 
@@ -130,14 +130,14 @@ const Header = ({ title, subtitle }) => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={toggleLanguage}
-            className="p-3 rounded-xl transition-all"
+            className="p-2 md:p-3 rounded-xl transition-all"
             style={{
               background: isDark ? colors.bgSecondary : '#F5F5F5',
               border: `1px solid ${isDark ? colors.border : '#EAEAEA'}`,
             }}
             title={t('header.language')}
           >
-            <Globe className="w-5 h-5" style={{ color: isDark ? colors.textSecondary : '#666564' }} />
+            <Globe className="w-4 h-4 md:w-5 md:h-5" style={{ color: isDark ? colors.textSecondary : '#666564' }} />
             <span className="sr-only">{language === 'en' ? 'العربية' : 'English'}</span>
           </motion.button>
 
@@ -147,13 +147,13 @@ const Header = ({ title, subtitle }) => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowNotifications(!showNotifications)}
-              className="p-3 rounded-xl transition-all relative"
+              className="p-2 md:p-3 rounded-xl transition-all relative"
               style={{
                 background: isDark ? colors.bgSecondary : '#F5F5F5',
                 border: `1px solid ${isDark ? colors.border : '#EAEAEA'}`,
               }}
             >
-              <Bell className="w-5 h-5" style={{ color: isDark ? colors.textSecondary : '#666564' }} />
+              <Bell className="w-4 h-4 md:w-5 md:h-5" style={{ color: isDark ? colors.textSecondary : '#666564' }} />
               {unreadAlerts.length > 0 && (
                 <motion.span
                   initial={{ scale: 0 }}
@@ -224,29 +224,29 @@ const Header = ({ title, subtitle }) => {
             </AnimatePresence>
           </div>
 
-          {/* Profile */}
-          <div className="relative">
+          {/* Profile - Hidden on small mobile */}
+          <div className="relative hidden sm:block">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setShowProfile(!showProfile)}
-              className="flex items-center gap-3 p-2 rounded-xl transition-all"
+              className="flex items-center gap-2 md:gap-3 p-1.5 md:p-2 rounded-xl transition-all"
               style={{
                 background: isDark ? colors.bgSecondary : '#F5F5F5',
                 border: `1px solid ${isDark ? colors.border : '#EAEAEA'}`,
               }}
             >
               <div
-                className="w-9 h-9 rounded-lg flex items-center justify-center"
+                className="w-8 h-8 md:w-9 md:h-9 rounded-lg flex items-center justify-center"
                 style={{ background: 'linear-gradient(135deg, #F39200 0%, #CC7A00 100%)' }}
               >
-                <User className="w-5 h-5 text-white" />
+                <User className="w-4 h-4 md:w-5 md:h-5 text-white" />
               </div>
-              <div className="text-left hidden md:block">
+              <div className="text-left hidden lg:block">
                 <p className="text-sm font-medium" style={{ color: colors.textPrimary }}>Admin User</p>
                 <p className="text-xs" style={{ color: colors.textSecondary }}>Operations Manager</p>
               </div>
-              <ChevronDown className="w-4 h-4" style={{ color: colors.textSecondary }} />
+              <ChevronDown className="w-4 h-4 hidden md:block" style={{ color: colors.textSecondary }} />
             </motion.button>
 
             <AnimatePresence>
