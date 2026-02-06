@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { DataProvider } from './context/DataContext';
 
 // Layout Components
@@ -79,9 +80,10 @@ const MainLayout = ({ children }) => {
 const App = () => {
   return (
     <BrowserRouter>
-      <LanguageProvider>
-        <DataProvider>
-          <Routes>
+      <ThemeProvider>
+        <LanguageProvider>
+          <DataProvider>
+            <Routes>
             {/* Public Routes - No Login Required */}
             <Route path="/" element={<MainLayout><Home /></MainLayout>} />
             <Route path="/factoryLayout" element={<MainLayout><FactoryView /></MainLayout>} />
@@ -97,9 +99,10 @@ const App = () => {
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </DataProvider>
-      </LanguageProvider>
+            </Routes>
+          </DataProvider>
+        </LanguageProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 };
