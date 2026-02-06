@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -44,22 +45,25 @@ const SaudiCableLogo = ({ size = 48 }) => (
 
 const menuItems = [
   { id: 'home', icon: Home, path: '/' },
-  { id: 'factoryLayout', icon: Map, path: '/factory' },
-  { id: 'planning', icon: ClipboardList, path: '/planning', label: 'Planning', labelAr: 'التخطيط' },
-  { id: 'capacityPlanning', icon: BarChart3, path: '/capacity' },
+  { id: 'factoryLayout', icon: Map, path: '/factoryLayout' },
+  { id: 'capacityPlanning', icon: BarChart3, path: '/capacityPlanning' },
   { id: 'scheduling', icon: Calendar, path: '/scheduling' },
-  { id: 'shopFloor', icon: Factory, path: '/shopfloor' },
-  { id: 'maintenanceDashboard', icon: Wrench, path: '/maintenance' },
-  { id: 'qualityControl', icon: CheckCircle, path: '/quality' },
-  { id: 'scrapManagement', icon: Trash2, path: '/scrap' },
-  { id: 'workforceManagement', icon: Users, path: '/workforce' },
+  { id: 'shopFloor', icon: Factory, path: '/shopFloor' },
+  { id: 'maintenanceDashboard', icon: Wrench, path: '/maintenanceDashboard' },
+  { id: 'qualityControl', icon: CheckCircle, path: '/qualityControl' },
+  { id: 'scrapManagement', icon: Trash2, path: '/scrapManagement' },
+  { id: 'workforceManagement', icon: Users, path: '/workforceManagement' },
   { id: 'analytics', icon: LayoutDashboard, path: '/analytics' },
 ];
 
-const Sidebar = ({ currentPage, onNavigate }) => {
+const Sidebar = () => {
   const { t, isRTL } = useLanguage();
   const { isDark, colors } = useTheme();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const currentPath = location.pathname;
 
   return (
     <motion.aside
@@ -111,14 +115,14 @@ const Sidebar = ({ currentPage, onNavigate }) => {
         <ul className="space-y-1 px-3">
           {menuItems.map((item) => {
             const Icon = item.icon;
-            const isActive = currentPage === item.id;
+            const isActive = currentPath === item.path || (item.path === '/' && currentPath === '/');
 
             return (
               <li key={item.id}>
                 <motion.button
                   whileHover={{ scale: 1.02, x: isRTL ? -4 : 4 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => onNavigate(item.id)}
+                  onClick={() => navigate(item.path)}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200"
                   style={isActive ? {
                     background: 'linear-gradient(135deg, #F39200 0%, #CC7A00 100%)',
@@ -175,9 +179,9 @@ const Sidebar = ({ currentPage, onNavigate }) => {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => onNavigate('settings')}
+          onClick={() => navigate('/settings')}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200"
-          style={currentPage === 'settings' ? {
+          style={currentPath === '/settings' ? {
             background: 'linear-gradient(135deg, #F39200 0%, #CC7A00 100%)',
             boxShadow: '0 4px 14px rgba(243, 146, 0, 0.35)',
             color: '#FFFFFF'
@@ -187,7 +191,7 @@ const Sidebar = ({ currentPage, onNavigate }) => {
         >
           <Settings
             className="w-5 h-5"
-            style={{ color: currentPage === 'settings' ? '#FFFFFF' : colors.textMuted }}
+            style={{ color: currentPath === '/settings' ? '#FFFFFF' : colors.textMuted }}
           />
           {!isCollapsed && <span className="text-sm font-medium">{t('common.settings')}</span>}
         </motion.button>

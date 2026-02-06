@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
@@ -37,7 +37,6 @@ const PageWrapper = ({ children }) => (
 
 // Main Layout with Sidebar and Header
 const MainLayout = ({ children }) => {
-  const [currentPage, setCurrentPage] = useState('home');
   const { t, isRTL } = useLanguage();
   const location = useLocation();
 
@@ -62,7 +61,7 @@ const MainLayout = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-[#0f1115]">
-      <Sidebar currentPage={location.pathname.substring(1) || 'home'} onNavigate={setCurrentPage} />
+      <Sidebar />
 
       <main className={`transition-all duration-300 ${isRTL ? 'mr-[280px]' : 'ml-[280px]'}`}>
         <Header title={getPageTitle()} subtitle={t('header.subtitle')} />
