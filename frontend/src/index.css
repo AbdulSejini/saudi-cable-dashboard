@@ -1,0 +1,418 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Tajawal:wght@300;400;500;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Saudi Cable Brand Colors */
+:root {
+  --sc-orange: #F39200;
+  --sc-orange-light: #FFB84D;
+  --sc-orange-dark: #CC7A00;
+  --sc-dark: #2E2D2C;
+  --sc-dark-light: #4A4948;
+  --sc-dark-lighter: #666564;
+
+  /* Light Mode (Default) */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F5F5F5;
+  --color-bg-tertiary: #EAEAEA;
+  --color-text-primary: #2E2D2C;
+  --color-text-secondary: #666564;
+  --color-text-muted: #828180;
+  --color-border: #D5D5D5;
+  --color-accent: #F39200;
+
+  /* Status Colors */
+  --color-success: #10B981;
+  --color-warning: #F39200;
+  --color-danger: #EF4444;
+  --color-info: #3B82F6;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'Tajawal', sans-serif;
+  background: linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 50%, #EAEAEA 100%);
+  min-height: 100vh;
+  color: #2E2D2C;
+  overflow-x: hidden;
+}
+
+[dir="rtl"] body {
+  font-family: 'Tajawal', 'Inter', sans-serif;
+}
+
+/* Custom Scrollbar - Saudi Cable Theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5F5F5;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #F39200, #CC7A00);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #FFB84D, #F39200);
+}
+
+/* Glass Effect - Light Mode */
+.glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(46, 45, 44, 0.1);
+  box-shadow: 0 4px 20px rgba(46, 45, 44, 0.08);
+}
+
+.glass-dark {
+  background: rgba(46, 45, 44, 0.95);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(243, 146, 0, 0.2);
+  color: #FFFFFF;
+}
+
+/* Gradient Text - Saudi Cable */
+.gradient-text {
+  background: linear-gradient(135deg, #F39200, #CC7A00, #FFB84D);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-dark {
+  background: linear-gradient(135deg, #2E2D2C, #4A4948);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animated Border - Saudi Cable Orange */
+.animated-border {
+  position: relative;
+  overflow: hidden;
+}
+
+.animated-border::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #F39200, #FFB84D, #CC7A00, #F39200);
+  background-size: 400% 400%;
+  z-index: -1;
+  border-radius: inherit;
+  animation: gradient-rotate 3s ease infinite;
+}
+
+@keyframes gradient-rotate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Status Indicators - Saudi Cable Theme */
+.status-running {
+  animation: pulse 2s infinite;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.status-idle {
+  animation: pulse 3s infinite;
+  box-shadow: 0 0 10px rgba(243, 146, 0, 0.5);
+}
+
+.status-stopped {
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+
+.status-maintenance {
+  animation: pulse 2.5s infinite;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+/* Card Hover Effects */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(243, 146, 0, 0.15);
+}
+
+/* Machine Block Styles */
+.machine-block {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.machine-block:hover {
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+/* Progress Bar Animation */
+.progress-bar {
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  100% { left: 100%; }
+}
+
+/* Tooltip Styles - Light Mode */
+.tooltip {
+  position: relative;
+}
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 12px;
+  background: #2E2D2C;
+  color: #FFFFFF;
+  font-size: 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  z-index: 100;
+}
+
+.tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+  bottom: calc(100% + 5px);
+}
+
+/* Number Counter Animation */
+.counter {
+  display: inline-block;
+  transition: all 0.5s ease;
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* Factory Layout - Light Mode */
+.factory-layout {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%);
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(46, 45, 44, 0.1);
+}
+
+.factory-layout::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #F39200, #FFB84D, #CC7A00);
+}
+
+/* Saudi Cable Brand Button */
+.btn-saudi-cable {
+  background: linear-gradient(135deg, #F39200 0%, #CC7A00 100%);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-saudi-cable:hover {
+  background: linear-gradient(135deg, #FFB84D 0%, #F39200 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(243, 146, 0, 0.35);
+}
+
+.btn-saudi-cable-outline {
+  background: transparent;
+  color: #F39200;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: 2px solid #F39200;
+  cursor: pointer;
+}
+
+.btn-saudi-cable-outline:hover {
+  background: #F39200;
+  color: white;
+}
+
+/* Saudi Cable Brand Card */
+.sc-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid #EAEAEA;
+  box-shadow: 0 2px 8px rgba(46, 45, 44, 0.06);
+  transition: all 0.3s ease;
+}
+
+.sc-card:hover {
+  border-color: #F39200;
+  box-shadow: 0 8px 24px rgba(243, 146, 0, 0.12);
+}
+
+.sc-card-header {
+  border-bottom: 2px solid #F39200;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+/* Saudi Cable Input Styles */
+.sc-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #D5D5D5;
+  border-radius: 8px;
+  background: white;
+  color: #2E2D2C;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.sc-input:focus {
+  outline: none;
+  border-color: #F39200;
+  box-shadow: 0 0 0 3px rgba(243, 146, 0, 0.15);
+}
+
+.sc-input::placeholder {
+  color: #ABABAB;
+}
+
+/* Saudi Cable Select */
+.sc-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #D5D5D5;
+  border-radius: 8px;
+  background: white;
+  color: #2E2D2C;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sc-select:focus {
+  outline: none;
+  border-color: #F39200;
+  box-shadow: 0 0 0 3px rgba(243, 146, 0, 0.15);
+}
+
+/* Saudi Cable Badge */
+.sc-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.sc-badge-orange {
+  background: rgba(243, 146, 0, 0.15);
+  color: #CC7A00;
+}
+
+.sc-badge-dark {
+  background: rgba(46, 45, 44, 0.1);
+  color: #2E2D2C;
+}
+
+.sc-badge-success {
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+}
+
+.sc-badge-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #DC2626;
+}
+
+/* RTL Support */
+[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
+}
+
+/* Cable Cross-Section Icon Animation */
+.cable-icon {
+  animation: cableRotate 20s linear infinite;
+}
+
+@keyframes cableRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background: white;
+    color: #2E2D2C;
+  }
+
+  .glass, .glass-dark {
+    background: white;
+    border: 1px solid #D5D5D5;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sc-card {
+    padding: 16px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,409 @@
+import React, { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useData } from '../../context/DataContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { useTheme } from '../../context/ThemeContext';
+import {
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
+  Layers,
+  Eye,
+  EyeOff,
+  Info
+} from 'lucide-react';
+
+// Factory layout data based on the provided image
+const factoryAreas = {
+  'PCP-3': {
+    id: 'PCP-3',
+    name: 'PCP-3 Support',
+    color: '#F59E0B',
+    x: 5,
+    y: 5,
+    width: 25,
+    height: 35,
+    zones: [
+      { id: 'hvtest', name: 'HV Test Cage', x: 2, y: 2, w: 8, h: 6 },
+      { id: 'corporate', name: 'Corporate Building', x: 2, y: 20, w: 10, h: 8 },
+      { id: 'lagging', name: 'Lagging Area', x: 13, y: 10, w: 10, h: 8 },
+      { id: 'store', name: 'Store', x: 13, y: 20, w: 10, h: 10 },
+    ]
+  },
+  'PCP-2': {
+    id: 'PCP-2',
+    name: 'PCP-2 (BSI Cables)',
+    color: '#10B981',
+    x: 32,
+    y: 42,
+    width: 40,
+    height: 30,
+    machines: ['DT-5', 'DT-8', 'DT-9', 'PS-1', 'PS-2', 'PS-3', 'PS-4', 'JKT-4', 'ARM-4'],
+    zones: [
+      { id: 'forklift', name: 'Forklift Workshop', x: 2, y: 2, w: 12, h: 8 },
+      { id: 'canteen', name: 'Canteen', x: 15, y: 2, w: 10, h: 8 },
+      { id: 'storage', name: 'Storage Area', x: 26, y: 2, w: 12, h: 8 },
+      { id: 'scrap', name: 'Scrap Area', x: 2, y: 12, w: 12, h: 8 },
+      { id: 'offices', name: 'Offices', x: 26, y: 12, w: 12, h: 8 },
+    ]
+  },
+  'PCP-1': {
+    id: 'PCP-1',
+    name: 'PCP-1 (LV Cables)',
+    color: '#3B82F6',
+    x: 32,
+    y: 75,
+    width: 60,
+    height: 25,
+    machines: ['DT-1', 'DT-2', 'DT-4', 'BC-1', 'BC-2', 'AR-2', 'AR-3', 'XL-1', 'XL-2', 'XL-4', 'LX-3', 'XT-1', 'XT-3', 'XT-6', 'XT-7', 'XT-11'],
+    zones: []
+  },
+  'CV-Line': {
+    id: 'CV-Line',
+    name: 'CV-Line Area',
+    color: '#06B6D4',
+    x: 32,
+    y: 5,
+    width: 55,
+    height: 35,
+    machines: ['CV-1', 'CV-2'],
+    zones: [
+      { id: 'cvtower', name: 'CV-Line Tower', x: 48, y: 2, w: 5, h: 12 },
+      { id: 'offices-cv', name: 'Offices', x: 20, y: 15, w: 15, h: 8 },
+      { id: 'mosque', name: 'Mosque', x: 2, y: 18, w: 8, h: 8 },
+      { id: 'workshop', name: 'Workshop', x: 2, y: 28, w: 12, h: 6 },
+    ]
+  },
+  'PVC-Reel': {
+    id: 'PVC-Reel',
+    name: 'PVC & Reel Plants',
+    color: '#8B5CF6',
+    x: 88,
+    y: 5,
+    width: 10,
+    height: 70,
+    machines: ['RW-1', 'RW-2', 'SILO-1', 'SILO-2'],
+    zones: [
+      { id: 'silos', name: 'Finished Silos', x: 2, y: 8, w: 6, h: 15 },
+      { id: 'reel-storage', name: 'Reel Storage', x: 2, y: 50, w: 6, h: 15 },
+    ]
+  },
+  'Storage': {
+    id: 'Storage',
+    name: 'Storage Area',
+    color: '#6B7280',
+    x: 88,
+    y: 78,
+    width: 10,
+    height: 20,
+    zones: []
+  }
+};
+
+// Machine positions within areas (relative to area)
+const machinePositions = {
+  // PCP-1 machines
+  'DT-1': { x: 5, y: 5, w: 4, h: 3 },
+  'DT-2': { x: 10, y: 5, w: 4, h: 3 },
+  'DT-4': { x: 15, y: 5, w: 4, h: 3 },
+  'BC-1': { x: 20, y: 5, w: 5, h: 3 },
+  'BC-2': { x: 26, y: 5, w: 5, h: 3 },
+  'AR-2': { x: 32, y: 5, w: 4, h: 3 },
+  'AR-3': { x: 37, y: 5, w: 4, h: 3 },
+  'XL-1': { x: 5, y: 12, w: 8, h: 4 },
+  'XL-2': { x: 14, y: 12, w: 8, h: 4 },
+  'XL-4': { x: 23, y: 12, w: 8, h: 4 },
+  'LX-3': { x: 32, y: 12, w: 8, h: 4 },
+  'XT-1': { x: 41, y: 5, w: 4, h: 3 },
+  'XT-3': { x: 46, y: 5, w: 4, h: 3 },
+  'XT-6': { x: 51, y: 5, w: 4, h: 3 },
+  'XT-7': { x: 41, y: 12, w: 4, h: 4 },
+  'XT-11': { x: 46, y: 12, w: 4, h: 4 },
+  // PCP-2 machines
+  'DT-5': { x: 5, y: 22, w: 4, h: 3 },
+  'DT-8': { x: 10, y: 22, w: 4, h: 3 },
+  'DT-9': { x: 15, y: 22, w: 4, h: 3 },
+  'PS-1': { x: 20, y: 22, w: 4, h: 3 },
+  'PS-2': { x: 25, y: 22, w: 4, h: 3 },
+  'PS-3': { x: 5, y: 26, w: 4, h: 3 },
+  'PS-4': { x: 10, y: 26, w: 4, h: 3 },
+  'JKT-4': { x: 15, y: 26, w: 4, h: 3 },
+  'ARM-4': { x: 20, y: 26, w: 4, h: 3 },
+  // CV-Line machines
+  'CV-1': { x: 10, y: 5, w: 15, h: 5 },
+  'CV-2': { x: 26, y: 5, w: 15, h: 5 },
+  // PVC-Reel machines
+  'RW-1': { x: 2, y: 25, w: 6, h: 5 },
+  'RW-2': { x: 2, y: 32, w: 6, h: 5 },
+  'SILO-1': { x: 2, y: 40, w: 3, h: 4 },
+  'SILO-2': { x: 5, y: 40, w: 3, h: 4 },
+};
+
+const FactoryLayout = ({ onMachineClick }) => {
+  const { machines } = useData();
+  const { t } = useLanguage();
+  const { isDark, colors } = useTheme();
+  const [zoom, setZoom] = useState(1);
+  const [selectedArea, setSelectedArea] = useState(null);
+  const [showMachines, setShowMachines] = useState(true);
+  const [hoveredMachine, setHoveredMachine] = useState(null);
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'running': return '#10B981';
+      case 'idle': return '#F59E0B';
+      case 'stopped': return '#EF4444';
+      case 'maintenance': return '#8B5CF6';
+      default: return '#6B7280';
+    }
+  };
+
+  const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.2, 2));
+  const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.2, 0.5));
+  const handleReset = () => setZoom(1);
+
+  return (
+    <div className="relative rounded-2xl overflow-hidden" style={{ background: colors.bgCard, border: `1px solid ${colors.border}` }}>
+      {/* Toolbar */}
+      <div className="absolute top-4 left-4 z-20 flex items-center gap-2">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleZoomIn}
+          className="p-2 rounded-lg transition-colors"
+          style={{ background: colors.bgTertiary, border: `1px solid ${colors.border}` }}
+        >
+          <ZoomIn className="w-5 h-5" style={{ color: colors.textSecondary }} />
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleZoomOut}
+          className="p-2 rounded-lg transition-colors"
+          style={{ background: colors.bgTertiary, border: `1px solid ${colors.border}` }}
+        >
+          <ZoomOut className="w-5 h-5" style={{ color: colors.textSecondary }} />
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleReset}
+          className="p-2 rounded-lg transition-colors"
+          style={{ background: colors.bgTertiary, border: `1px solid ${colors.border}` }}
+        >
+          <Maximize2 className="w-5 h-5" style={{ color: colors.textSecondary }} />
+        </motion.button>
+        <div className="h-6 w-px mx-2" style={{ background: colors.border }} />
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setShowMachines(!showMachines)}
+          className="p-2 rounded-lg transition-colors"
+          style={{ background: colors.bgTertiary, border: `1px solid ${colors.border}` }}
+        >
+          {showMachines ? <Eye className="w-5 h-5" style={{ color: colors.textSecondary }} /> : <EyeOff className="w-5 h-5" style={{ color: colors.textSecondary }} />}
+        </motion.button>
+      </div>
+
+      {/* Legend */}
+      <div className="absolute top-4 right-4 z-20 rounded-xl p-4" style={{ background: colors.bgCard, border: `1px solid ${colors.border}`, boxShadow: isDark ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.08)' }}>
+        <h4 className="text-sm font-semibold mb-3" style={{ color: colors.textPrimary }}>Status Legend</h4>
+        <div className="space-y-2">
+          {[
+            { status: 'running', label: 'Running' },
+            { status: 'idle', label: 'Idle' },
+            { status: 'stopped', label: 'Stopped' },
+            { status: 'maintenance', label: 'Maintenance' }
+          ].map(({ status, label }) => (
+            <div key={status} className="flex items-center gap-2">
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: getStatusColor(status) }}
+              />
+              <span className="text-xs" style={{ color: colors.textSecondary }}>{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Factory SVG Layout */}
+      <motion.div
+        className="p-8 overflow-auto"
+        style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }}
+      >
+        <svg
+          viewBox="0 0 100 100"
+          className="w-full h-auto min-h-[600px]"
+          style={{ minWidth: '1200px' }}
+        >
+          {/* Background Grid */}
+          <defs>
+            <pattern id="grid" width="5" height="5" patternUnits="userSpaceOnUse">
+              <path d="M 5 0 L 0 0 0 5" fill="none" stroke={isDark ? "rgba(255,255,255,0.08)" : "rgba(46,45,44,0.08)"} strokeWidth="0.1" />
+            </pattern>
+          </defs>
+          <rect width="100" height="100" fill="url(#grid)" />
+
+          {/* Factory Areas */}
+          {Object.values(factoryAreas).map((area) => (
+            <g key={area.id}>
+              {/* Area Background */}
+              <motion.rect
+                x={area.x}
+                y={area.y}
+                width={area.width}
+                height={area.height}
+                fill={`${area.color}15`}
+                stroke={area.color}
+                strokeWidth="0.3"
+                rx="1"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                whileHover={{ fill: `${area.color}25` }}
+                onClick={() => setSelectedArea(area.id === selectedArea ? null : area.id)}
+                style={{ cursor: 'pointer' }}
+              />
+
+              {/* Area Label */}
+              <text
+                x={area.x + 1}
+                y={area.y + 2}
+                fill={area.color}
+                fontSize="1.5"
+                fontWeight="bold"
+              >
+                {area.name}
+              </text>
+
+              {/* Zones within area */}
+              {area.zones?.map((zone) => (
+                <g key={zone.id}>
+                  <rect
+                    x={area.x + zone.x}
+                    y={area.y + zone.y}
+                    width={zone.w}
+                    height={zone.h}
+                    fill={isDark ? "rgba(255,255,255,0.05)" : "rgba(46,45,44,0.05)"}
+                    stroke={isDark ? "rgba(255,255,255,0.15)" : "rgba(46,45,44,0.15)"}
+                    strokeWidth="0.15"
+                    rx="0.5"
+                  />
+                  <text
+                    x={area.x + zone.x + zone.w / 2}
+                    y={area.y + zone.y + zone.h / 2}
+                    fill={isDark ? "rgba(255,255,255,0.6)" : "rgba(46,45,44,0.6)"}
+                    fontSize="0.8"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                  >
+                    {zone.name}
+                  </text>
+                </g>
+              ))}
+
+              {/* Machines */}
+              {showMachines && area.machines?.map((machineId) => {
+                const machine = machines[machineId];
+                const pos = machinePositions[machineId];
+                if (!machine || !pos) return null;
+
+                return (
+                  <g key={machineId}>
+                    <motion.rect
+                      x={area.x + pos.x}
+                      y={area.y + pos.y}
+                      width={pos.w}
+                      height={pos.h}
+                      fill={getStatusColor(machine.status)}
+                      rx="0.3"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      whileHover={{ scale: 1.1 }}
+                      onHoverStart={() => setHoveredMachine(machineId)}
+                      onHoverEnd={() => setHoveredMachine(null)}
+                      onClick={() => onMachineClick?.(machine)}
+                      style={{ cursor: 'pointer' }}
+                      className={machine.status === 'running' ? 'status-running' : ''}
+                    />
+                    <text
+                      x={area.x + pos.x + pos.w / 2}
+                      y={area.y + pos.y + pos.h / 2}
+                      fill="white"
+                      fontSize="0.6"
+                      fontWeight="bold"
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      pointerEvents="none"
+                    >
+                      {machineId}
+                    </text>
+
+                    {/* Pulse effect for running machines */}
+                    {machine.status === 'running' && (
+                      <motion.rect
+                        x={area.x + pos.x}
+                        y={area.y + pos.y}
+                        width={pos.w}
+                        height={pos.h}
+                        fill="none"
+                        stroke={getStatusColor(machine.status)}
+                        strokeWidth="0.2"
+                        rx="0.3"
+                        animate={{
+                          opacity: [0.5, 0, 0.5],
+                          scale: [1, 1.2, 1]
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: 'easeInOut'
+                        }}
+                      />
+                    )}
+                  </g>
+                );
+              })}
+            </g>
+          ))}
+        </svg>
+      </motion.div>
+
+      {/* Machine Info Tooltip */}
+      <AnimatePresence>
+        {hoveredMachine && machines[hoveredMachine] && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="absolute bottom-4 left-4 z-20 rounded-xl p-4 min-w-[200px]"
+            style={{ background: colors.bgCard, border: `1px solid ${colors.border}`, boxShadow: isDark ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.08)' }}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: getStatusColor(machines[hoveredMachine].status) }}
+              />
+              <span className="font-semibold" style={{ color: colors.textPrimary }}>{hoveredMachine}</span>
+            </div>
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span style={{ color: colors.textSecondary }}>Speed:</span>
+                <span style={{ color: colors.textPrimary }}>{machines[hoveredMachine].speed.toFixed(1)} m/s</span>
+              </div>
+              <div className="flex justify-between">
+                <span style={{ color: colors.textSecondary }}>OEE:</span>
+                <span style={{ color: colors.textPrimary }}>{machines[hoveredMachine].oee}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span style={{ color: colors.textSecondary }}>Operator:</span>
+                <span style={{ color: colors.textPrimary }}>{machines[hoveredMachine].operator || '-'}</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+export default FactoryLayout;

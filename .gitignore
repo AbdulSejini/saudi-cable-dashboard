@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.py[cod]
+.env
+.env.local
+.env.production.local
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Database
+*.db
+*.sqlite3
+data/
+
+# Vercel
+.vercel/
+
+# Python virtual env
+venv/
+.venv/
+
+# Cache
+.cache/
+*.pack
